@@ -49,5 +49,5 @@ def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token = create_access_token(subject=user.username)
+    access_token = create_access_token(data={"sub": user.username})
     return Token(access_token=access_token)
