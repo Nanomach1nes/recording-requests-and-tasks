@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Заявка №{{ req.id }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Детали заявки №{{ req.id }}</h2>
+            <a href="/ui/requests" class="btn btn-secondary">← Вернуться к списку</a>
+        </div>
+        <hr>
+
+        <div class="mb-4">
+            <h4><strong>Название неисправности:</strong></h4>
+            <p class="fs-5">{{ req.title }}</p>
+        </div>
+
+        <div class="mb-4">
+            <h4><strong>Подробное описание:</strong></h4>
+            <p class="fs-5 text-muted" style="white-space: pre-wrap;">{{ req.description }}</p>
+        </div>
+
+        <div class="mb-4">
+            <h4><strong>Текущий статус:</strong></h4>
+            {% if req.status == 'pending' %}
+                <span class="badge bg-warning text-dark fs-6">В ожидании</span>
+            {% elif req.status == 'in_progress' %}
+                <span class="badge bg-primary fs-6">В работе</span>
+            {% else %}
+                <span class="badge bg-success fs-6">Выполнено</span>
+            {% endif %}
+        </div>
+
+        <div class="card bg-light p-3 mt-4">
+            <h5>Управление заявкой (Смена статуса)</h5>
+            <form action="/ui/requests/{{ req.id }}/status" method="POST" class="row g-2 align-items-center mt-2">
+                <div class="col-auto">
+                    <select name="status" class="form-select">
+                        <option value="pending" {% if req.status == 'pending' %}selected{% endif %}>В ожидании</option>
+                        <option value="in_progress" {% if req.status == 'in_progress' %}selected{% endif %}>В работе</option>
+                        <option value="completed" {% if req.status == 'completed' %}selected{% endif %}>Выполнено</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-success">Обновить статус</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
