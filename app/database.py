@@ -20,7 +20,7 @@ def get_db():
 # Удалили импорт моделей сюда, чтобы избежать циклов
 # Запуск создания таблиц:
 if __name__ == "__main__":
-    from app.models import User, Request 
+    from app.models import User, RepairRequest 
     print(f"Модели импортированы. Метаданные содержат таблицы: {Base.metadata.tables.keys()}")
     Base.metadata.create_all(bind=engine)
     print("Команда создания выполнена.")

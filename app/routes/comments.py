@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.models import Comment, Request, User
+from app.models import Comment, RepairRequest, User
 from app.schemas import CommentCreate, CommentRead
 from app.dependencies import get_current_user
 
@@ -28,7 +28,7 @@ def create_comment(
     current_user: User = Depends(get_current_user)
 ):
     # Проверяем существование заявки
-    if db.get(Request, payload.request_id) is None:
+    if db.get(RepairRequest, payload.request_id) is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Request not found")
 
     # Принудительно привязываем комментарий к текущему авторизованному юзеру

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import Request, Task
+from app.models import RepairRequest, Task
 from app.schemas import TaskCreate, TaskRead, TaskUpdate
 
 router = APIRouter()
@@ -23,7 +23,7 @@ def get_task(task_id: int, db: Session = Depends(get_db)):
 
 @router.post("/", response_model=TaskRead, status_code=status.HTTP_201_CREATED)
 def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
-    request = db.get(Request, payload.request_id)
+    request = db.get(RepairRequest, payload.request_id)
     if request is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Request not found")
 

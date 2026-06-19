@@ -16,7 +16,7 @@ class User(Base):
     hashed_password = Column(String)
     role = Column(String, default=UserRole.user)
 
-class Request(Base):
+class RepairRequest(Base):
     __tablename__ = "requests"
     
     id = Column(Integer, primary_key=True, index=True)

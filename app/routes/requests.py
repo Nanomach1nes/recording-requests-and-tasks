@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.auth import get_current_user
 from app.database import get_db
-from app.models import Category, Request, User, UserRole
+from app.models import Category, RepairRequest, User, UserRole
 from app.schemas import RequestCreate, RequestRead, RequestUpdate
 
 router = APIRouter()
@@ -63,12 +63,12 @@ def update_request(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    request = db.get(Request, request_id)
+    request = db.get(RepairRequest, request_id)
     if request is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Request not found")
 
-    if current_user.id != request.user_id and current_user.role != UserRole.admin and getattr(current_user.role, "value", "") != "admin":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
+    if current_user.role != UserRole.admin and getattr(current_user.role, "value", "") != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Только администратор может редактировать заявки")
 
     data = payload.model_dump(exclude_unset=True)
     if "category_id" in data and data["category_id"] is not None:
@@ -89,12 +89,12 @@ def delete_request(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    request = db.get(Request, request_id)
+    request = db.get(RepairRequest, request_id)
     if request is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Request not found")
 
-    if current_user.id != request.user_id and current_user.role != UserRole.admin and getattr(current_user.role, "value", "") != "admin":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
+    if current_user.role != UserRole.admin and getattr(current_user.role, "value", "") != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Только администратор может удалять заявки")
 
     db.delete(request)
     db.commit()

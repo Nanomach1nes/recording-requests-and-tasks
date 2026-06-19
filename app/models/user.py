@@ -30,8 +30,8 @@ class User(Base):
         nullable=False,
     )
 
-    requests: Mapped[list["Request"]] = relationship(
-        "Request",
+    requests: Mapped[list["RepairRequest"]] = relationship(
+        "RepairRequest",
         back_populates="user",
         cascade="all, delete-orphan",
     )

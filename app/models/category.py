@@ -11,7 +11,7 @@ class Category(Base):
     name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False, index=True)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    requests: Mapped[list["Request"]] = relationship(
-        "Request",
+    requests: Mapped[list["RepairRequest"]] = relationship(
+        "RepairRequest",
         back_populates="category",
     )

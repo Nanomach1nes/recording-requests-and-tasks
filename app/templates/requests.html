@@ -44,62 +44,62 @@
                 </tr>
             </thead>
             <tbody>
-    {% for req in requests %}
-    <tr>
-        <td>{{ req.id }}</td>
-        <td><strong>{{ req.title }}</strong></td>
-        <td>{{ req.description }}</td>
-        <td>
-            {% if req.status == 'pending' %}
-                <span class="badge bg-warning text-dark">В ожидании</span>
-            {% elif req.status == 'in_progress' %}
-                <span class="badge bg-primary">В работе</span>
-            {% else %}
-                <span class="badge bg-success">Выполнено</span>
-            {% endif %}
-        </td>
-
-        {% if current_user.role == 'admin' %}
-        <td class="actions-cell">
-            <a href="/ui/requests/{{ req.id }}" class="btn btn-outline-primary btn-sm">Открыть</a>
-            
-            <form action="/ui/requests/{{ req.id }}/delete" method="POST" style="display: inline;" onsubmit="return confirm('Реально удалить заявку?');">
-                <button type="submit" class="btn btn-danger btn-sm" style="background-color: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
-                    Удалить
-                </button>
-            </form>
-        </td>
-        {% endif %}
-    </tr>
-    {% else %}
-    <tr>
-        <td colspan="5" class="text-center text-muted py-4">
-            Заявок пока нет. Самое время создать первую!
-        </td>
-    </tr>
-    {% endfor %}
-</tbody>
+                {% for req in requests %}
+                <tr>
+                    <td>{{ req.id }}</td>
+                    <td><strong>{{ req.title }}</strong></td>
+                    <td>{{ req.description }}</td>
+                    <td>
+                        {% if req.status == 'pending' %}<span class="badge bg-warning text-dark">В ожидании</span>
+                        {% elif req.status == 'in_progress' %}<span class="badge bg-primary">В работе</span>
+                        {% else %}<span class="badge bg-success">Выполнено</span>{% endif %}
+                    </td>
+                    <td class="actions-cell">
+                        <a href="/ui/requests/{{ req.id }}" class="btn btn-outline-primary btn-sm">Открыть</a>
+                        {% if current_user.role.value == 'admin' %}
+                        <form action="/ui/requests/{{ req.id }}/delete" method="POST" style="display: inline;" onsubmit="return confirm('Реально удалить заявку?');">
+                            <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="text-center text-muted py-4">Заявок пока нет. Самое время создать первую!</td></tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
 </div>
 
-<form action="/ui/requests/create" method="POST">
-    <div class="mb-3">
-        <label class="form-label">ФИО клиента</label>
-        <input type="text" name="fio" class="form-control" placeholder="Иванов Иван Иванович" required>
+<div class="modal fade" id="createRequestModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Создание новой заявки</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/ui/requests/create" method="POST" onsubmit="this.querySelector('button[type=submit]').disabled = true;">
+                    <div class="mb-3">
+                        <label class="form-label">ФИО клиента</label>
+                        <input type="text" name="fio" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Номер телефона</label>
+                        <input type="tel" name="phone" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Название неисправности</label>
+                        <input type="text" name="title" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Подробное описание</label>
+                        <textarea name="description" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Создать заявку</button>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Номер телефона</label>
-        <input type="tel" name="phone" class="form-control" placeholder="+7 (999) 000-00-00" required>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Название неисправности</label>
-        <input type="text" name="title" class="form-control" placeholder="Замена термопасты" required>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Подробное описание</label>
-        <textarea name="description" class="form-control" rows="2" required></textarea>
-    </div>
-    <button type="submit" class="btn btn-primary w-100">Создать заявку</button>
-</form>
+</div>
 {% endblock %}

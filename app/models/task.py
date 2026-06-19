@@ -24,4 +24,4 @@ class Task(Base):
         nullable=False,
     )
 
-    request: Mapped["Request"] = relationship("Request", back_populates="tasks")
+    request: Mapped["RepairRequest"] = relationship("RepairRequest", back_populates="tasks")

@@ -1,12 +1,13 @@
 from datetime import datetime
-
+from app.models.user import User, UserRole
+from app.models.category import Category
 from sqlalchemy import DateTime, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 
 
-class Request(Base):
+class RepairRequest(Base):
     __tablename__ = "requests"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
@@ -23,6 +24,8 @@ class Request(Base):
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     status: Mapped[str] = mapped_column(String(50), default="new", nullable=False)
+    fio: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    phone: Mapped[str | None] = mapped_column(String(50), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),

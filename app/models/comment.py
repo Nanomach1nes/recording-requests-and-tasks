@@ -27,5 +27,5 @@ class Comment(Base):
         nullable=False,
     )
 
-    request: Mapped["Request"] = relationship("Request", back_populates="comments")
+    request: Mapped["RepairRequest"] = relationship("RepairRequest", back_populates="comments")
     user: Mapped["User"] = relationship("User", back_populates="comments")
