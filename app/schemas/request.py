@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field
 class RequestBase(BaseModel):
     title: str = Field(..., min_length=1, max_length=255)
     description: str | None = None
-    status: str = "new"
+    status: str = "pending"
 
 
 class RequestCreate(RequestBase):

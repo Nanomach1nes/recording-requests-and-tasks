@@ -1,18 +1,17 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
-from fastapi.staticfiles import StaticFiles  # Импортируем для статики
-from fastapi.templating import Jinja2Templates  # Импортируем для HTML
+from fastapi.templating import Jinja2Templates  # Импорт для HTML
 from app.database import engine, Base
-from sqlalchemy.orm import Session
-from app.auth import get_current_user
-from app.models import User, UserRole
 
 from app.routes import auth, requests, tasks, categories, comments
 from app.routes.ui import router as ui_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    from app import models  # noqa: F401
+
+    Base.metadata.create_all(bind=engine)
     yield
 
 app = FastAPI(
@@ -22,9 +21,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-app.include_router(ui_router, prefix="/ui", tags=["ui"])
-
-# Настраиваем шаблоны и статику (папки, которые ты создал)
+# Настраиваем шаблоны и статику
 templates = Jinja2Templates(directory="app/templates")
 
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])

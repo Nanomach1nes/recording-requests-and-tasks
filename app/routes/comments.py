@@ -14,7 +14,7 @@ def list_comments_for_request(
     current_user: User = Depends(get_current_user)
 ):
     # Проверяем, существует ли вообще такая заявка
-    request = db.get(Request, request_id)
+    request = db.get(RepairRequest, request_id)
     if request is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Request not found")
     
@@ -31,10 +31,7 @@ def create_comment(
     if db.get(RepairRequest, payload.request_id) is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Request not found")
 
-    # Принудительно привязываем комментарий к текущему авторизованному юзеру
-    payload.user_id = current_user.id
-
-    comment = Comment(**payload.model_dump())
+    comment = Comment(**payload.model_dump(), user_id=current_user.id)
     db.add(comment)
     db.commit()
     db.refresh(comment)

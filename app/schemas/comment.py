@@ -9,7 +9,6 @@ class CommentBase(BaseModel):
 
 class CommentCreate(CommentBase):
     request_id: int
-    user_id: int
 
 
 class CommentUpdate(BaseModel):

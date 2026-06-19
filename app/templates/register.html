@@ -8,12 +8,15 @@
         <div class="card shadow-sm">
             <div class="card-body p-4">
                 <h3 class="card-title text-center mb-4">Регистрация рабочего аккаунта</h3>
+                {% if error %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endif %}
                 <form action="/ui/register" method="POST">
                     <div class="mb-3">
-                        <input type="text" name="username" class="form-control" placeholder="Логин" required>
+                        <input type="text" name="username" class="form-control" placeholder="Логин" value="{{ username or '' }}" required>
                     </div>
                     <div class="mb-3">
-                        <input type="email" name="email" class="form-control" placeholder="Email" required>
+                        <input type="email" name="email" class="form-control" placeholder="Email" value="{{ email or '' }}" required>
                     </div>
                     <div class="mb-3">
                         <input type="password" name="password" class="form-control" placeholder="Пароль" required>

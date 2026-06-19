@@ -1,10 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
-from jose import jwt, JWTError
-from app.database import get_db
-from seed import generate_secure_hash
-from fastapi import Form
+
 from app.core.security import create_access_token, hash_password, verify_password
 from app.database import get_db
 from app.models import User, UserRole
@@ -13,31 +11,29 @@ from app.schemas import Token, UserRead, UserRegister
 router = APIRouter()
 
 
-@router.post("/register")
-def register_worker(
-    username: str = Form(...), 
-    password: str = Form(...), 
-    db: Session = Depends(get_db)
-):
-    # Проверка, занят ли логин
-    if db.query(User).filter(User.username == username).first():
-        return RedirectResponse(url="/ui/login?error=exists", status_code=303)
-    
-    # Хэшируем пароль функцией из seed.py
-    hashed_pw = generate_secure_hash(password)
-    
-    # Создаем нового пользователя
-    new_user = User(
-        username=username,
-        email=f"{username}@work.local",
-        hashed_password=hashed_pw,
-        role=UserRole.user  # Убедись, что это роль обычного юзера
+@router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
+def register_user(payload: UserRegister, db: Session = Depends(get_db)):
+    existing_user = (
+        db.query(User)
+        .filter(or_(User.username == payload.username, User.email == payload.email))
+        .first()
     )
-    
-    db.add(new_user)
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="User with this username or email already exists",
+        )
+
+    user = User(
+        username=payload.username,
+        email=str(payload.email),
+        hashed_password=hash_password(payload.password),
+        role=UserRole.user,
+    )
+    db.add(user)
     db.commit()
-    
-    return RedirectResponse(url="/ui/login", status_code=303)
+    db.refresh(user)
+    return user
 
 
 @router.post("/login", response_model=Token)
@@ -55,29 +51,3 @@ def login(
 
     access_token = create_access_token(data={"sub": user.username})
     return Token(access_token=access_token)
-
-from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, JWTError # Убедись, что эти библиотеки установлены
-
-# Секретный ключ (у тебя он был в docker-compose)
-SECRET_KEY = "super_secret_kpt_key_2026"
-ALGORITHM = "HS256"
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
-
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-        
-    user = db.query(User).filter(User.username == username).first()
-    if user is None:
-        raise credentials_exception
-    return user

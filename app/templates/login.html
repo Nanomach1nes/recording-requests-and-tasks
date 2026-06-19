@@ -8,6 +8,12 @@
         <div class="card shadow-sm">
             <div class="card-body p-4">
                 <h3 class="card-title text-center mb-4">Авторизация</h3>
+                {% if request.query_params.registered %}
+                    <div class="alert alert-success">Аккаунт создан. Теперь войдите в систему.</div>
+                {% endif %}
+                {% if error %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endif %}
                 {% if request.query_params.error %}
                     <div class="alert alert-danger">Неверный логин или пароль</div>
                 {% endif %}

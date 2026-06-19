@@ -21,6 +21,17 @@
             <p class="fs-5 text-muted" style="white-space: pre-wrap;">{{ req.description }}</p>
         </div>
 
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h5><strong>ФИО клиента:</strong></h5>
+                <p>{{ req.fio or 'Не указано' }}</p>
+            </div>
+            <div class="col-md-6">
+                <h5><strong>Телефон:</strong></h5>
+                <p>{{ req.phone or 'Не указан' }}</p>
+            </div>
+        </div>
+
         <div class="mb-4">
             <h4><strong>Текущий статус:</strong></h4>
             {% if req.status == 'pending' %}
@@ -32,6 +43,7 @@
             {% endif %}
         </div>
 
+        {% if is_admin %}
         <div class="card bg-light p-3 mt-4">
             <h5>Управление заявкой (Смена статуса)</h5>
             <form action="/ui/requests/{{ req.id }}/status" method="POST" class="row g-2 align-items-center mt-2">
@@ -45,6 +57,27 @@
                 <div class="col-auto">
                     <button type="submit" class="btn btn-success">Обновить статус</button>
                 </div>
+            </form>
+        </div>
+        {% endif %}
+
+        <div class="card bg-light p-3 mt-4">
+            <h5>Комментарии и история обсуждения</h5>
+            <div class="mb-3">
+                {% for comment in comments %}
+                    <div class="border rounded p-2 mb-2 bg-white">
+                        <div class="small text-muted">Пользователь #{{ comment.user_id }} · {{ comment.created_at }}</div>
+                        <div>{{ comment.text }}</div>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">Комментариев пока нет.</p>
+                {% endfor %}
+            </div>
+            <form action="/ui/requests/{{ req.id }}/comments" method="POST">
+                <div class="mb-2">
+                    <textarea name="text" class="form-control" rows="3" placeholder="Добавить комментарий" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Добавить комментарий</button>
             </form>
         </div>
     </div>

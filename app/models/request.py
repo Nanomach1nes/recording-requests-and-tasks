@@ -23,7 +23,7 @@ class RepairRequest(Base):
     )
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
-    status: Mapped[str] = mapped_column(String(50), default="new", nullable=False)
+    status: Mapped[str] = mapped_column(String(50), default="pending", nullable=False)
     fio: Mapped[str | None] = mapped_column(String(255), nullable=True)
     phone: Mapped[str | None] = mapped_column(String(50), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
