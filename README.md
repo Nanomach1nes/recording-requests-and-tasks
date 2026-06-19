@@ -55,6 +55,15 @@ recording-requests-and-tasks/
 - pip
 - Docker и Docker Compose для контейнерного запуска
 
+### Переменные окружения
+
+Для запуска проекта создайте файл `.env` в корневой директории по следующему шаблону:
+
+DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+SECRET_KEY=your_super_secret_jwt_key_here
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
 ## Локальный запуск
 
 1. Создайте и активируйте виртуальное окружение:
@@ -150,4 +159,10 @@ CI настроен в `.github/workflows/ci.yml`: при push или pull reque
 - build command: `pip install -r requirements.txt`
 - start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 
-Ссылку на опубликованную версию нужно добавить в отчёт после деплоя.
+
+### Деплой на Railway
+
+1. Создайте проект на Railway и подключите базу данных PostgreSQL.
+2. Привяжите GitHub-репозиторий к новому веб-сервису.
+3. В настройках веб-сервиса (Variables) добавьте переменную `DATABASE_URL`, скопировав значение из настроек базы данных Railway.
+4. Платформа автоматически обнаружит `Dockerfile` и запустит сборку.
