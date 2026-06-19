@@ -1,19 +1,14 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
+from app.metadata import Base
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./app.db"
+SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://postgres:postgres@localhost:5432/recording_db"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False},
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-
-class Base(DeclarativeBase):
-    pass
-
 
 def get_db():
     db = SessionLocal()
@@ -22,8 +17,10 @@ def get_db():
     finally:
         db.close()
 
-
-def init_db() -> None:
-    import app.models  # noqa: F401 — регистрация всех моделей в metadata
-
+# Удалили импорт моделей сюда, чтобы избежать циклов
+# Запуск создания таблиц:
+if __name__ == "__main__":
+    from app.models import User, Request 
+    print(f"Модели импортированы. Метаданные содержат таблицы: {Base.metadata.tables.keys()}")
     Base.metadata.create_all(bind=engine)
+    print("Команда создания выполнена.")
