@@ -1,6 +1,6 @@
 import hashlib
 import os
-from app.database import SessionLocal, init_db
+from app.database import SessionLocal
 from app.models import User, UserRole
 
 def generate_secure_hash(password: str) -> str:

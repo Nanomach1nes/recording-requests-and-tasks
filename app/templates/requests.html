@@ -58,6 +58,8 @@
                 <span class="badge bg-success">Выполнено</span>
             {% endif %}
         </td>
+
+        {% if current_user.role == 'admin' %}
         <td class="actions-cell">
             <a href="/ui/requests/{{ req.id }}" class="btn btn-outline-primary btn-sm">Открыть</a>
             
@@ -67,6 +69,7 @@
                 </button>
             </form>
         </td>
+        {% endif %}
     </tr>
     {% else %}
     <tr>
@@ -80,27 +83,23 @@
     </div>
 </div>
 
-<div class="modal fade" id="createRequestModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Новая заявка</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="/ui/requests/create" method="POST">
-                    <div class="mb-3">
-                        <label class="form-label">Название неисправности</label>
-                        <input type="text" name="title" class="form-control" placeholder="Например: Замена термопасты Ryzen 5" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Подробное описание</label>
-                        <textarea name="description" class="form-control" rows="3" placeholder="Греется в играх до 90 градусов..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Отправить в базу</button>
-                </form>
-            </div>
-        </div>
+<form action="/ui/requests/create" method="POST">
+    <div class="mb-3">
+        <label class="form-label">ФИО клиента</label>
+        <input type="text" name="fio" class="form-control" placeholder="Иванов Иван Иванович" required>
     </div>
-</div>
+    <div class="mb-3">
+        <label class="form-label">Номер телефона</label>
+        <input type="tel" name="phone" class="form-control" placeholder="+7 (999) 000-00-00" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Название неисправности</label>
+        <input type="text" name="title" class="form-control" placeholder="Замена термопасты" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Подробное описание</label>
+        <textarea name="description" class="form-control" rows="2" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Создать заявку</button>
+</form>
 {% endblock %}

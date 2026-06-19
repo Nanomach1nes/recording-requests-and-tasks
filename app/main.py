@@ -3,14 +3,16 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles  # Импортируем для статики
 from fastapi.templating import Jinja2Templates  # Импортируем для HTML
+from app.database import engine, Base
+from sqlalchemy.orm import Session
+from app.auth import get_current_user
+from app.models import User, UserRole
 
-from app.database import init_db
-from app.routes import api_router
+from app.routes import auth, requests, tasks, categories, comments
 from app.routes.ui import router as ui_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_db()
     yield
 
 app = FastAPI(
@@ -20,11 +22,17 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.include_router(ui_router, prefix="/ui", tags=["ui"])
+
 # Настраиваем шаблоны и статику (папки, которые ты создал)
 templates = Jinja2Templates(directory="app/templates")
 
-app.include_router(api_router, prefix="/api/v1")
-app.include_router(ui_router, prefix="/ui")
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
+app.include_router(requests.router, prefix="/api/v1/requests", tags=["requests"])
+app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["tasks"])
+app.include_router(categories.router, prefix="/api/v1/categories", tags=["categories"])
+app.include_router(comments.router, prefix="/api/v1/comments", tags=["comments"])
+app.include_router(ui_router, prefix="/ui", tags=["ui"])
 
 @app.get("/health")
 def health_check():
